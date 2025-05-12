@@ -30,7 +30,7 @@ export function createAppContainer(): Container {
   container.bind(Component.OfferModel).toConstantValue(OfferModel);
   container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();
 
-  
+
   container.bind(Component.CommentModel).toConstantValue(CommentModel);
   container.bind(Component.CommentService).to(DefaultCommentService).inSingletonScope();
 

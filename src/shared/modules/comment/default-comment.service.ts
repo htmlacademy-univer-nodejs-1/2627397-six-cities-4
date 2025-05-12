@@ -19,7 +19,7 @@ export class DefaultCommentService {
       rating: dto.rating,
       offerId: dto.offerId,
       author: dto.authorId
-});
+    });
 
     await comment.save();
 
