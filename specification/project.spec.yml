@@ -1,0 +1,480 @@
+openapi: 3.0.3
+info:
+  title: Api-сервер для проекта 6 городов
+  version: 1.0.0
+  description: API для проекта 6 городов
+servers:
+  - url: https://api.server.test/v1
+components:
+  schemas:
+    Offer:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: float
+        type:
+          type: string
+          enum: [apartment, house, room, hotel]
+        isPremium:
+          type: boolean
+        isFavorite:
+          type: boolean
+        rating:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+        city:
+          type: string
+        previewImage:
+          type: string
+          format: uri
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        goods:
+          type: array
+          items:
+            type: string
+        bedrooms:
+          type: integer
+        maxAdults:
+          type: integer
+        host:
+          $ref: "#/components/schemas/User"
+        commentCount:
+          type: integer
+      required:
+        - title
+        - price
+        - type
+        - city
+        - previewImage
+        - bedrooms
+        - maxAdults
+        - host
+        - isPremium
+        - isFavorite
+        - rating
+        - createdAt
+        - commentCount
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatarUrl:
+          type: string
+          format: uri
+        isPro:
+          type: boolean
+      required:
+        - email
+        - name
+        - avatarUrl
+        - isPro
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - content
+        - createdAt
+        - user
+paths:
+  /offers:
+    post:
+      summary: "Создание нового предложения"
+      operationId: "createOffer"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: "Данные для создания нового предложения"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                location:
+                  type: string
+                image:
+                  type: string
+              required:
+                - title
+                - price
+                - location
+      responses:
+        "201":
+          description: "Предложение успешно создано"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "400":
+          description: "Ошибка валидации данных"
+        "401":
+          description: "Неавторизованный запрос"
+
+    get:
+      summary: "Список предложений"
+      operationId: "listOffers"
+      tags:
+        - "Offer"
+      parameters:
+        - name: "limit"
+          in: "query"
+          description: "Количество предложений"
+          required: false
+          schema:
+            type: integer
+            default: 60
+        - name: "sort"
+          in: "query"
+          description: "Сортировка предложений"
+          required: false
+          schema:
+            type: string
+            default: "date_desc"
+      responses:
+        "200":
+          description: "Список предложений"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+  /offers/{offerId}:
+    put:
+      summary: "Редактирование предложения"
+      operationId: "updateOffer"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "offerId"
+          in: "path"
+          description: "ID предложения"
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: "Обновленные данные предложения"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                  format: float
+                location:
+                  type: string
+                image:
+                  type: string
+              required:
+                - title
+                - price
+                - location
+      responses:
+        "200":
+          description: "Предложение успешно обновлено"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+    delete:
+      summary: "Удаление предложения"
+      operationId: "deleteOffer"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "offerId"
+          required: true
+          in: "path"
+          description: "ID предложения"
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Предложение успешно удалено"
+    get:
+      summary: "Детальная информация о предложении"
+      operationId: "getOfferById"
+      tags:
+        - "Offer"
+      parameters:
+        - name: "offerId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Детальная информация о предложении"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "404":
+          description: "Предложение не найдено"
+  /offers/premium:
+    get:
+      summary: "Премиальные предложения для города"
+      operationId: "getPremiumOffers"
+      tags:
+        - "Offer"
+      parameters:
+        - name: "city"
+          in: "query"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Список премиальных предложений"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+  /favorites:
+    get:
+      summary: "Список избранных предложений"
+      operationId: "getFavoriteOffers"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Список избранных предложений"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Offer"
+  /favorites/{offerId}:
+    post:
+      summary: "Добавить предложение в избранное"
+      operationId: "addOfferToFavorites"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "offerId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Предложение добавлено в избранное"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "401":
+          description: "Неавторизованный запрос"
+        "404":
+          description: "Предложение не найдено"
+
+    delete:
+      summary: "Удалить предложение из избранного"
+      operationId: "removeOfferFromFavorites"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "offerId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Предложение удалено из избранного"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "401":
+          description: "Неавторизованный запрос"
+        "404":
+          description: "Предложение не найдено"
+  /comments/{offerId}:
+    get:
+      summary: "Список комментариев для предложения"
+      operationId: "listComments"
+      tags:
+        - "Comment"
+      parameters:
+        - name: "offerId"
+          in: "path"
+          description: "ID предложения"
+          required: false
+          schema:
+            type: string
+        - name: "limit"
+          in: "query"
+          description: "Количество комментариев"
+          required: false
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: "Список комментариев"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+  /comments:
+    post:
+      summary: "Добавление комментария"
+      operationId: "createComment"
+      tags:
+        - "Comment"
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: "Тело комментария"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+              required:
+                - content
+      responses:
+        "201":
+          description: "Комментарий успешно добавлен"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "400":
+          description: "Ошибка валидации данных"
+        "401":
+          description: "Неавторизованный запрос"
+  /users:
+    post:
+      summary: "Создание нового пользователя"
+      operationId: "createUser"
+      tags:
+        - "User"
+      requestBody:
+        description: "Данные для создания нового пользователя"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        "201":
+          description: "Пользователь успешно создан"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: "Ошибка валидации данных"
+  /auth/login:
+    post:
+      summary: "Вход в аккаунт"
+      operationId: "login"
+      tags:
+        - "Auth"
+      requestBody:
+        description: "Данные для аутентификации"
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: "Успешная аутентификация"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: "Неверный логин или пароль"
+  /auth/logout:
+    post:
+      summary: "Выход из аккаунта"
+      operationId: "logout"
+      tags:
+        - "Auth"
+      security:
+        - BearerAuth: []
+      responses:
+        "204":
+          description: "Сеанс завершен"
