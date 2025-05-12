@@ -11,6 +11,8 @@ import { DefaultUserService } from '../shared/modules/user/default-user.service.
 import { OfferModel } from '../shared/modules/offer/offer.entity.js';
 import { DefaultOfferService } from '../shared/modules/offer/default-offer.service.js';
 import { RestApplication } from './rest.application.js';
+import { CommentModel } from '../shared/modules/comment/comment.entity.js';
+import { DefaultCommentService } from '../shared/modules/comment/default-comment.service.js';
 
 export function createAppContainer(): Container {
   const container = new Container();
@@ -27,6 +29,10 @@ export function createAppContainer(): Container {
 
   container.bind(Component.OfferModel).toConstantValue(OfferModel);
   container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();
+
+
+  container.bind(Component.CommentModel).toConstantValue(CommentModel);
+  container.bind(Component.CommentService).to(DefaultCommentService).inSingletonScope();
 
   return container;
 }
