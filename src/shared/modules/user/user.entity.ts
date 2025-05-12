@@ -14,7 +14,7 @@ export class UserEntity extends defaultClasses.TimeStamps {
   }
 
   public checkPassword(raw: string, salt: string): boolean {
-  return this.password === raw + salt;
+    return this.password === raw + salt;
   }
 
 }

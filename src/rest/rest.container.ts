@@ -15,18 +15,18 @@ import { RestApplication } from './rest.application.js';
 export function createAppContainer(): Container {
   const container = new Container();
 
-    container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
-    container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
-  
-    container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
-    container.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
-  
-    
-    container.bind(Component.UserModel).toConstantValue(UserModel);
-    container.bind(Component.UserService).to(DefaultUserService).inSingletonScope();
-  
-    container.bind(Component.OfferModel).toConstantValue(OfferModel);
-    container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();
+  container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
+  container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
+
+  container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
+  container.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
+
+
+  container.bind(Component.UserModel).toConstantValue(UserModel);
+  container.bind(Component.UserService).to(DefaultUserService).inSingletonScope();
+
+  container.bind(Component.OfferModel).toConstantValue(OfferModel);
+  container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();
 
   return container;
 }

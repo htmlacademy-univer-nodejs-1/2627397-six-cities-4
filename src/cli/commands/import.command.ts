@@ -7,8 +7,8 @@ import { DatabaseClient } from '../../shared/libs/database/database-client.inter
 import { UserService } from '../../shared/modules/user/user-service.interface.js';
 import { OfferService } from '../../shared/modules/offer/offer-service.interface.js';
 import { HousingType } from '../../shared/modules/offer/offer.entity.js';
-import { Ref }         from '@typegoose/typegoose';
-import { UserEntity }  from '../../shared/modules/user/user.entity.js';
+import { Ref } from '@typegoose/typegoose';
+import { UserEntity } from '../../shared/modules/user/user.entity.js';
 import { RestSchema } from '../../shared/libs/config/rest.schema.js';
 import { Config } from '../../shared/libs/config/config.interface.js';
 
@@ -21,8 +21,8 @@ export class ImportCommand implements Command {
 
   constructor() {
     const container = createAppContainer();
-    this.dbClient     = container.get<DatabaseClient>(Component.DatabaseClient);
-    this.userService  = container.get<UserService>(Component.UserService);
+    this.dbClient = container.get<DatabaseClient>(Component.DatabaseClient);
+    this.userService = container.get<UserService>(Component.UserService);
     this.offerService = container.get<OfferService>(Component.OfferService);
     this.config = container.get<Config<RestSchema>>(Component.Config);
   }
@@ -34,12 +34,12 @@ export class ImportCommand implements Command {
   public async execute(
     filePath: string
   ): Promise<void> {
- 
+
     const uri = getMongoURI(this.config.get('DB_USER'),
       this.config.get('DB_PASSWORD'),
       this.config.get('DB_HOST'),
       this.config.get('DB_PORT'),
-      this.config.get('DB_NAME'))
+      this.config.get('DB_NAME'));
 
     await this.dbClient.connect(uri);
 
@@ -57,7 +57,7 @@ export class ImportCommand implements Command {
         isPremiumStr,
         isFavoriteStr,
         ratingStr,
-        _,
+        type,
         bedroomsStr,
         maxAdultsStr,
         priceStr,
@@ -83,7 +83,7 @@ export class ImportCommand implements Command {
         isPremium: isPremiumStr === 'true',
         isFavorite: isFavoriteStr === 'true',
         rating: Number(ratingStr),
-        type: cols[9] as HousingType,
+        type: type as HousingType,
         bedrooms: Number(bedroomsStr),
         maxAdults: Number(maxAdultsStr),
         price: Number(priceStr),

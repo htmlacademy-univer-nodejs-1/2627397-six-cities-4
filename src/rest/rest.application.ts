@@ -30,7 +30,7 @@ export class RestApplication {
     this.logger.info('Application initialized');
     this.logger.info(`PORT: ${this.config.get('PORT')}`);
 
-    
+
     this.logger.info('Init database…');
     await this._initDb();
     this.logger.info('Init database completed');

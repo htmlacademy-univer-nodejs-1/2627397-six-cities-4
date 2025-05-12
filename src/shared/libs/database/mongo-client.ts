@@ -30,7 +30,7 @@ export class MongoDatabaseClient implements DatabaseClient {
       } catch (error) {
         attempts++;
         this.logger.error(`Connection attempt ${attempts} failed`, error as Error);
-        await new Promise(res => setTimeout(res, RETRY_DELAY));
+        await new Promise((res) => setTimeout(res, RETRY_DELAY));
       }
     }
     throw new Error('Could not connect to MongoDB after retries');
