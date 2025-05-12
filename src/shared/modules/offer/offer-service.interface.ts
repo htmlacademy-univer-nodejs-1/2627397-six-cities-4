@@ -8,7 +8,7 @@ export interface OfferService {
   findById(id: string): Promise<DocumentType<OfferEntity> | null>;
   find(count?: number): Promise<DocumentType<OfferEntity>[]>;
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
+  updateById(dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
   getDetailsInfo(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   getPremium(): Promise<DocumentType<OfferEntity>[]>;

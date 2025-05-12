@@ -41,21 +41,21 @@ export class ImportCommand implements Command {
       maxAdultsStr,
       priceStr,
       goodsStr,
-      userIdStr,
+      userEmail,
+      _,
       latitudeStr,
       longitudeStr
     ] = line.trim().split('\t');
 
-    const user = await this.userService.findById(userIdStr);
+    const user = await this.userService.findByEmail(userEmail);
     if (!user) {
-      console.warn(chalk.yellow(`User with id=${userIdStr} not found. Skipping offer "${title}".`));
+      console.warn(chalk.yellow(`User with email=${userEmail} not found. Skipping offer "${title}".`));
       return;
     }
 
     await this.offerService.create({
       title,
       description,
-      postDate: new Date(createdAtStr),
       city,
       previewImage,
       images: imagesStr.split(';'),
@@ -67,10 +67,11 @@ export class ImportCommand implements Command {
       maxAdults: Number(maxAdultsStr),
       price: Number(priceStr),
       goods: goodsStr.split(';'),
-      userId: user.id,
+      host: user.id,
       commentCount: 0,
       latitude: Number(latitudeStr),
       longitude: Number(longitudeStr),
+      createdAt: createdAtStr,
     });
   }
 
@@ -92,15 +93,13 @@ export class ImportCommand implements Command {
     const reader = new TSVFileReader(filePath.trim());
     let importedCount = 0;
 
-    reader.on('line', async (line: string, resolve: () => void) => {
+    reader.on('line', async (line: string) => {
       try {
         await this.saveOffer(line);
         importedCount++;
-        resolve();
       } catch (error) {
         console.error(chalk.red(`Error processing line: ${line}`));
         console.error(chalk.red(error));
-        resolve();
       }
     });
 

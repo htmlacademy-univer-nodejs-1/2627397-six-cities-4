@@ -15,10 +15,6 @@ export interface CreateOfferDto {
   maxAdults: number;
   host: {
     id: string;
-    email: string;
-    name: string;
-    avatarUrl: string;
-    isPro: boolean;
   };
   commentCount: number;
   latitude: number;

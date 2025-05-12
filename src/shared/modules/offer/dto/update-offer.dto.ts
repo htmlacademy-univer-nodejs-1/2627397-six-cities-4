@@ -1,4 +1,5 @@
 export interface UpdateOfferDto {
+  id: any;
   title?: string;
   description?: string;
   city?: string;

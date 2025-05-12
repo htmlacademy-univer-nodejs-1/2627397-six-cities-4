@@ -1,5 +1,4 @@
 import { injectable, inject } from 'inversify';
-import mongoose from 'mongoose';
 import { DocumentType, types } from '@typegoose/typegoose';
 import { OfferService } from './offer-service.interface.js';
 import { OfferEntity } from './offer.entity.js';
@@ -44,7 +43,7 @@ export class DefaultOfferService implements OfferService {
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const result = await this.offerModel.create({
       ...dto,
-      host: dto.host.id,
+      host: dto.host,
       postDate: new Date(dto.createdAt),
     });
 
@@ -65,8 +64,8 @@ export class DefaultOfferService implements OfferService {
       .exec();
   }
 
-  public async updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(offerId, dto, { new: true }).exec();
+  public async updateById(dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel.findByIdAndUpdate(dto.id, dto, { new: true }).exec();
   }
 
   public async getPremium(): Promise<DocumentType<OfferEntity>[]> {

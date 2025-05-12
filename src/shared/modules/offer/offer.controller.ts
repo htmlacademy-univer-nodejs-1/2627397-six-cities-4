@@ -24,9 +24,10 @@ export default class OfferController extends BaseController {
     this.logger.info('Register routes for OfferController');
     this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
     this.addRoute({ path: '/', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({ path: '/', method: HttpMethod.Patch, handler: this.update });
+
     this.addRoute({ path: '/:offerId', method: HttpMethod.Delete, handler: this.delete });
     this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show });
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Patch, handler: this.update });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -58,14 +59,14 @@ export default class OfferController extends BaseController {
   }
 
   public async update(
-    { body, params }: Request<ParamOfferId, unknown, UpdateOfferDto>,
+    { body }: Request<Record<string, unknown>, Record<string, unknown>, UpdateOfferDto>,
     res: Response
   ): Promise<void> {
-    const updatedOffer = await this.offersService.updateById(params.offerId, body);
+    const updatedOffer = await this.offersService.updateById(body);
     if (!updatedOffer) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
-        `Offer with id ${params.offerId} not found.`,
+        `Offer with id ${body.id} not found.`,
         'OfferController'
       );
     }
