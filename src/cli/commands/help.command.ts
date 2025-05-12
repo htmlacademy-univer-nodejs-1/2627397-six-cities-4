@@ -2,7 +2,9 @@ import { Command } from './command.interface.js';
 import chalk from 'chalk';
 
 export class HelpCommand implements Command {
-  getName(): string { return '--help'; }
+  getName(): string {
+    return '--help';
+  }
 
   execute(): void {
     console.log(chalk.blue(`

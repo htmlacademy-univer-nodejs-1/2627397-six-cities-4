@@ -19,12 +19,18 @@ export class ImportCommand implements Command {
       reader.read();
       const offers: Offer[] = reader.toArray();
 
-      console.log(chalk.green(`Импортировано предложений: ${offers.length}`));
-      offers.forEach((o, i) => {
-        console.log(chalk.gray(`${i + 1}.`), o.title);
+      console.log(
+        chalk.green(`Импортировано предложений: ${offers.length}`)
+      );
+      offers.forEach((offer, index) => {
+        console.log(chalk.gray(`${index + 1}.`), offer.title);
       });
-    } catch (err: any) {
-      console.error(chalk.red(`Не удалось прочитать файл: ${err.message}`));
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(chalk.red(`Не удалось прочитать файл: ${error.message}`));
+      } else {
+        console.error(chalk.red('Неизвестная ошибка при чтении файла'));
+      }
     }
   }
 }

@@ -15,7 +15,7 @@ export enum HousingType {
 }
 
 export type Offer = {
-  title: string; 
+  title: string;
   description: string;
   createdAt: string;
   city: City;
