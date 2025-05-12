@@ -1,7 +1,8 @@
 import { generateRandomValue, getRandomItem, getRandomItems, getRandomBoolean } from '../../utils/random.js';
+import { OffersData } from '../../types/offers.data.type.js';
 
 export class OfferGenerator {
-  constructor(private data: any) {}
+  constructor(private data: OffersData) {}
 
   generate(): string {
     const title = getRandomItem(this.data.titles);
