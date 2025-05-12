@@ -1,60 +1,111 @@
 import { Command } from './command.interface.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/tsv-file-reader.js';
-import { Offer } from '../../shared/types/offer.type.js';
-import chalk from 'chalk';
+import { getMongoURI } from '../../shared/utils/database.js';
+import { createAppContainer } from '../../rest/rest.container.js';
+import { Component } from '../../shared/types/component.enum.js';
+import { DatabaseClient } from '../../shared/libs/database/database-client.interface.js';
+import { UserService } from '../../shared/modules/user/user-service.interface.js';
+import { OfferService } from '../../shared/modules/offer/offer-service.interface.js';
+import { HousingType } from '../../shared/modules/offer/offer.entity.js';
+import { Ref }         from '@typegoose/typegoose';
+import { UserEntity }  from '../../shared/modules/user/user.entity.js';
+import { RestSchema } from '../../shared/libs/config/rest.schema.js';
+import { Config } from '../../shared/libs/config/config.interface.js';
+
 
 export class ImportCommand implements Command {
-  public getName(): string {
+  private dbClient: DatabaseClient;
+  private userService: UserService;
+  private offerService: OfferService;
+  private readonly config: Config<RestSchema>;
+
+  constructor() {
+    const container = createAppContainer();
+    this.dbClient     = container.get<DatabaseClient>(Component.DatabaseClient);
+    this.userService  = container.get<UserService>(Component.UserService);
+    this.offerService = container.get<OfferService>(Component.OfferService);
+    this.config = container.get<Config<RestSchema>>(Component.Config);
+  }
+
+  public getName() {
     return '--import';
   }
 
-  public async execute(filePath?: string): Promise<void> {
-    if (!filePath) {
-      console.error(chalk.red('Укажите путь до TSV-файла'));
-      return;
-    }
+  public async execute(
+    filePath: string
+  ): Promise<void> {
+ 
+    const uri = getMongoURI(this.config.get('DB_USER'),
+      this.config.get('DB_PASSWORD'),
+      this.config.get('DB_HOST'),
+      this.config.get('DB_PORT'),
+      this.config.get('DB_NAME'))
 
-    const reader = new TSVFileReader(filePath);
-    let count = 0;
+    await this.dbClient.connect(uri);
 
-    reader.on('line', (line: string) => {
-      const fields = line.split('\t');
-      const offer: Offer = {
-        title: fields[0],
-        description: fields[1],
-        createdAt: fields[2],
-        city: fields[3] as Offer['city'],
-        previewImage: fields[4],
-        images: fields[5].split(';'),
-        isPremium: fields[6] === 'true',
-        isFavorite: fields[7] === 'true',
-        rating: Number(fields[8]),
-        type: fields[9] as Offer['type'],
-        bedrooms: Number(fields[10]),
-        maxAdults: Number(fields[11]),
-        price: Number(fields[12]),
-        goods: fields[13].split(';'),
-        email: fields[14],
-        avatarUrl: fields[15],
-        latitude: Number(fields[16]),
-        longitude: Number(fields[17]),
-      };
-      count++;
-      console.log(chalk.gray(`${count}.`), offer.title);
+    const reader = new TSVFileReader(filePath.trim());
+    reader.on('line', async (line: string, resolve: () => void) => {
+      const cols = line.trim().split('\t');
+
+      const [
+        title,
+        description,
+        createdAtStr,
+        city,
+        previewImage,
+        imagesStr,
+        isPremiumStr,
+        isFavoriteStr,
+        ratingStr,
+        _,
+        bedroomsStr,
+        maxAdultsStr,
+        priceStr,
+        goodsStr,
+        userIdStr,
+        latitudeStr,
+        longitudeStr
+      ] = cols;
+
+      const user = await this.userService.findById(userIdStr);
+      if (!user) {
+        console.warn(`User with id=${userIdStr} not found. Skipping offer "${title}".`);
+        return resolve();
+      }
+
+      await this.offerService.create({
+        title,
+        description,
+        postDate: new Date(createdAtStr),
+        city,
+        previewImage,
+        images: imagesStr.split(';'),
+        isPremium: isPremiumStr === 'true',
+        isFavorite: isFavoriteStr === 'true',
+        rating: Number(ratingStr),
+        type: cols[9] as HousingType,
+        bedrooms: Number(bedroomsStr),
+        maxAdults: Number(maxAdultsStr),
+        price: Number(priceStr),
+        goods: goodsStr.split(';'),
+        userId: user._id as Ref<UserEntity>,
+        commentCount: 0,
+        latitude: Number(latitudeStr),
+        longitude: Number(longitudeStr)
+      });
+
+      resolve();
     });
 
-    reader.on('end', (total: number) => {
-      console.log(chalk.green(`Импортировано предложений: ${total}`));
+    reader.on('end', async (total: number) => {
+      console.log(`Imported ${total} offers`);
+      await this.dbClient.disconnect();
     });
 
     try {
       await reader.read();
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(chalk.red(`Не удалось прочитать файл: ${error.message}`));
-      } else {
-        console.error(chalk.red('Неизвестная ошибка при чтении файла'));
-      }
+    } catch (err) {
+      console.error(`Import failed: ${(err as Error).message}`);
     }
   }
 }
