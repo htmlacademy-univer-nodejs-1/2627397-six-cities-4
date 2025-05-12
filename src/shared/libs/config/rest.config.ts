@@ -14,7 +14,7 @@ export class RestConfig implements Config<RestSchema> {
   ) {
     const parsedOutput = dotenv.config();
     if (parsedOutput.error) {
-      throw new Error("Can't read .env file");
+      throw new Error('Can\'t read .env file');
     }
 
     configRestSchema.load({});
