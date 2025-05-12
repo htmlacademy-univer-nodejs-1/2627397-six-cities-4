@@ -1,4 +1,3 @@
-export interface FileReader<T> {
+export interface FileReader {
   read(): void;
-  toArray(): T[];
 }

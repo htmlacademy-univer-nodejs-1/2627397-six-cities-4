@@ -1,0 +1,13 @@
+{
+"api": {
+  "titles": ["Квартира 1", "Квартира 2", "Квартира 3"],
+  "descriptions": ["Квартира в центре", "Кквартира с балконом", "Современная квартира возле парка"],
+  "cities": ["Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"],
+  "previewImages": ["preview1.jpg", "preview2.jpg", "preview3.jpg"],
+  "images": ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg", "image6.jpg"],
+  "types": ["apartment", "house", "room", "hotel"],
+  "goods": ["Breakfast", "Air conditioning", "Laptop friendly workspace", "Baby seat", "Washer", "Towels", "Fridge"],
+  "emails": ["user1@example.com", "user2@example.com", "user3@example.com"],
+  "avatars": ["avatar1.png", "avatar2.png", "avatar3.png"]
+}
+}
