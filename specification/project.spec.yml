@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API для проекта 6 городов
 servers:
-  - url: https://api.server.test/v1
+  - url: 'http://localhost:3000'
 components:
   schemas:
     Offer:
@@ -12,6 +12,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
         title:
           type: string
         description:
@@ -34,6 +35,7 @@ components:
           format: date-time
         city:
           type: string
+          enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
         previewImage:
           type: string
           format: uri
@@ -51,9 +53,17 @@ components:
         maxAdults:
           type: integer
         host:
-          $ref: "#/components/schemas/User"
+          type: string
+          format: objectid
+          pattern: "^[a-fA-F0-9]{24}$" # Ensure host is a valid ObjectId string
         commentCount:
           type: integer
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
       required:
         - title
         - price
@@ -68,12 +78,15 @@ components:
         - rating
         - createdAt
         - commentCount
+        - latitude
+        - longitude
 
     User:
       type: object
       properties:
         id:
           type: string
+          format: objectid
         email:
           type: string
           format: email
@@ -108,47 +121,6 @@ components:
         - user
 paths:
   /offers:
-    post:
-      summary: "Создание нового предложения"
-      operationId: "createOffer"
-      tags:
-        - "Offer"
-      security:
-        - BearerAuth: []
-      requestBody:
-        description: "Данные для создания нового предложения"
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                price:
-                  type: number
-                  format: float
-                location:
-                  type: string
-                image:
-                  type: string
-              required:
-                - title
-                - price
-                - location
-      responses:
-        "201":
-          description: "Предложение успешно создано"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Offer"
-        "400":
-          description: "Ошибка валидации данных"
-        "401":
-          description: "Неавторизованный запрос"
-
     get:
       summary: "Список предложений"
       operationId: "listOffers"
@@ -161,14 +133,14 @@ paths:
           required: false
           schema:
             type: integer
-            default: 60
+            default: 10
         - name: "sort"
           in: "query"
           description: "Сортировка предложений"
           required: false
           schema:
             type: string
-            default: "date_desc"
+            default: "createdAt_desc"
       responses:
         "200":
           description: "Список предложений"
@@ -178,43 +150,45 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Offer"
-  /offers/{offerId}:
-    put:
-      summary: "Редактирование предложения"
+
+    post:
+      summary: "Создание нового предложения"
+      operationId: "createOffer"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: "Данные для создания нового предложения"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Offer"
+      responses:
+        "201":
+          description: "Предложение успешно создано"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "400":
+          description: "Ошибка валидации данных"
+        "401":
+          description: "Неавторизованный запрос"
+
+    patch:
+      summary: "Обновление предложения"
       operationId: "updateOffer"
       tags:
         - "Offer"
       security:
         - BearerAuth: []
-      parameters:
-        - name: "offerId"
-          in: "path"
-          description: "ID предложения"
-          required: true
-          schema:
-            type: string
       requestBody:
-        description: "Обновленные данные предложения"
+        description: "Данные для обновления предложения"
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                price:
-                  type: number
-                  format: float
-                location:
-                  type: string
-                image:
-                  type: string
-              required:
-                - title
-                - price
-                - location
+              $ref: "#/components/schemas/Offer"
       responses:
         "200":
           description: "Предложение успешно обновлено"
@@ -222,23 +196,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Offer"
-    delete:
-      summary: "Удаление предложения"
-      operationId: "deleteOffer"
-      tags:
-        - "Offer"
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: "offerId"
-          required: true
-          in: "path"
-          description: "ID предложения"
-          schema:
-            type: string
-      responses:
-        "204":
-          description: "Предложение успешно удалено"
+        "404":
+          description: "Предложение не найдено"
+
+  /offers/{offerId}:
     get:
       summary: "Детальная информация о предложении"
       operationId: "getOfferById"
@@ -250,6 +211,8 @@ paths:
           required: true
           schema:
             type: string
+            format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
       responses:
         "200":
           description: "Детальная информация о предложении"
@@ -259,9 +222,29 @@ paths:
                 $ref: "#/components/schemas/Offer"
         "404":
           description: "Предложение не найдено"
+
+    delete:
+      summary: "Удаление предложения"
+      operationId: "deleteOffer"
+      tags:
+        - "Offer"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: "offerId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: "Предложение успешно удалено"
+        "404":
+          description: "Предложение не найдено"
+
   /offers/premium:
     get:
-      summary: "Премиальные предложения для города"
+      summary: "Премиальные предложения"
       operationId: "getPremiumOffers"
       tags:
         - "Offer"
@@ -280,6 +263,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Offer"
+
   /favorites:
     get:
       summary: "Список избранных предложений"

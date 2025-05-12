@@ -14,15 +14,19 @@ import { RestApplication } from './rest.application.js';
 import { CommentModel } from '../shared/modules/comment/comment.entity.js';
 import { DefaultCommentService } from '../shared/modules/comment/default-comment.service.js';
 
+import { ExceptionFilterInterface } from '../shared/exception-filter/exception-filter.interface.js';
+import { ExceptionFilter } from '../shared/exception-filter/exception-filter.js';
+import { UserController } from '../shared/modules/user/user.controller.js';
+import { BaseController } from '../shared/controller/base.controller.js';
+import OfferController from '../shared/modules/offer/offer.controller.js';
+
 export function createAppContainer(): Container {
   const container = new Container();
 
-  container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
   container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
 
   container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
   container.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
-
 
   container.bind(Component.UserModel).toConstantValue(UserModel);
   container.bind(Component.UserService).to(DefaultUserService).inSingletonScope();
@@ -30,9 +34,16 @@ export function createAppContainer(): Container {
   container.bind(Component.OfferModel).toConstantValue(OfferModel);
   container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();
 
-
   container.bind(Component.CommentModel).toConstantValue(CommentModel);
   container.bind(Component.CommentService).to(DefaultCommentService).inSingletonScope();
+
+  container.bind<ExceptionFilterInterface>(Component.ExceptionFilterInterface).to(ExceptionFilter).inSingletonScope();
+
+  container.bind<BaseController>(Component.UserController).to(UserController).inSingletonScope();
+  container.bind<BaseController>(Component.OfferController).to(OfferController).inSingletonScope();
+
+  container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
+
 
   return container;
 }

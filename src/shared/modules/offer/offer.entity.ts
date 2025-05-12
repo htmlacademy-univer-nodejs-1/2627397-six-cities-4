@@ -8,7 +8,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true }) public title!: string;
   @prop({ required: true }) public description!: string;
   @prop({ required: true }) public postDate!: Date;
-  @prop({ required: true, enum: ['Paris','Cologne','Brussels','Amsterdam','Hamburg','Dusseldorf'] }) public city!: string;
+  @prop({ required: true, enum: ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'] }) public city!: string;
   @prop({ required: true }) public previewImage!: string;
   @prop({ required: true, type: () => [String] }) public images!: string[];
   @prop({ required: true }) public isPremium!: boolean;
@@ -19,7 +19,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true }) public maxAdults!: number;
   @prop({ required: true }) public price!: number;
   @prop({ required: true, type: () => [String] }) public goods!: string[];
-  @prop({ ref: UserEntity, required: true }) public userId!: Ref<UserEntity>;
+  @prop({ ref: UserEntity, required: true }) public host!: Ref<UserEntity>;
   @prop({ required: true }) public commentCount!: number;
   @prop({ required: true }) public latitude!: number;
   @prop({ required: true }) public longitude!: number;
