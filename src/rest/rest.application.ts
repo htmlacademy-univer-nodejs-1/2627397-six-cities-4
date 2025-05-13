@@ -10,6 +10,7 @@ import { DatabaseClient } from '../shared/libs/database/database-client.interfac
 import { getMongoURI } from '../shared/utils/database.js';
 import { BaseController } from '../shared/controller/base.controller.js';
 import { ExceptionFilterInterface } from '../shared/exception-filter/exception-filter.interface.js';
+import { resolve } from 'node:path';
 
 @injectable()
 export class RestApplication {
@@ -43,6 +44,8 @@ export class RestApplication {
     this.expressApp.use(helmet());
     this.expressApp.use(cors());
     this.expressApp.use(json());
+    const staticDir = this.config.get('UPLOAD_DIRECTORY');
+    this.expressApp.use('/static', express.static(resolve(staticDir)));
     this.logger.info('Middleware initialized');
   }
 

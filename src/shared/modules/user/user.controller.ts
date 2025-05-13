@@ -13,6 +13,10 @@ import { RestSchema } from '../../libs/config/rest.schema.js';
 import { BaseController } from '../../controller/base.controller.js';
 import { HttpError } from '../../errors/http-error.js';
 import { ValidateDtoMiddleware } from '../../middlewares/validate-dto.middleware.js';
+import { UploadFileMiddleware } from '../../middlewares/upload-file.middleware.js';
+import { ValidateObjectIdMiddleware } from '../../middlewares/validate-objectid.middleware.js';
+import { DocumentExistsMiddleware } from '../../middlewares/document-exists.middleware.js';
+import { ParamUserId } from '../../types/user-param-id.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -30,6 +34,16 @@ export class UserController extends BaseController {
       middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
     });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
+    this.addRoute({
+      path: '/avatar/:userId',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ValidateObjectIdMiddleware('userId'),
+        new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar')
+      ]
+    });
   }
 
   public async create(
@@ -65,5 +79,18 @@ export class UserController extends BaseController {
       'Not implemented',
       'UserController',
     );
+  }
+
+  public async uploadAvatar(
+    req: Request<ParamUserId>,
+    res: Response
+  ): Promise<void> {
+    const { userId } = req.params;
+    if (!req.file) {
+      res.status(StatusCodes.BAD_REQUEST).json({ error: 'No file uploaded' });
+      return;
+    }
+    const updatedUser = await this.userService.updateAvatar(userId, `/static/${req.file.filename}`);
+    res.status(StatusCodes.CREATED).json({ avatarUrl: updatedUser?.avatarUrl });
   }
 }
