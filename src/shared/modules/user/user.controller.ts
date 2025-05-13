@@ -12,6 +12,7 @@ import { Logger } from '../../libs/logger/logger.interface.js';
 import { RestSchema } from '../../libs/config/rest.schema.js';
 import { BaseController } from '../../controller/base.controller.js';
 import { HttpError } from '../../errors/http-error.js';
+import { ValidateDtoMiddleware } from '../../middlewares/validate-dto.middleware.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -22,7 +23,12 @@ export class UserController extends BaseController {
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
-    this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.create });
+    this.addRoute({
+      path: '/register',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+    });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
   }
 

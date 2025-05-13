@@ -3,6 +3,7 @@ import { CommentModel } from './comment.entity.js';
 import { OfferService } from '../offer/offer-service.interface.js';
 import { Logger } from '../../libs/logger/logger.interface.js';
 import { Component } from '../../types/component.enum.js';
+import { CreateCommentDto } from './dto/create-comment.dto.js';
 
 @injectable()
 export class DefaultCommentService {
@@ -12,20 +13,20 @@ export class DefaultCommentService {
     @inject(Component.OfferService) private offerService: OfferService
   ) {}
 
-  public async createComment(dto: { text: string, rating: number, offerId: string, authorId: string }) {
-    const comment = new this.model({
-      text: dto.text,
-      postDate: new Date(),
-      rating: dto.rating,
-      offerId: dto.offerId,
-      author: dto.authorId
-    });
-
+  public async create(dto: CreateCommentDto) {
+    const comment = await this.model.create(dto);
     await comment.save();
 
     await this.offerService.incCommentCount(dto.offerId);
 
     this.logger.info(`Created comment for offer ${dto.offerId}`);
     return comment;
+  }
+
+  public async findByOfferId(offerId: string) {
+    return this.model.find({ offerId })
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .exec();
   }
 }

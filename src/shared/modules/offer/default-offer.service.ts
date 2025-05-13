@@ -13,7 +13,7 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
   ) {}
-  
+
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     const deletedOffer = await this.offerModel.findByIdAndDelete(offerId).exec();
     if (!deletedOffer) {
