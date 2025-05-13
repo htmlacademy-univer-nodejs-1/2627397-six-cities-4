@@ -26,6 +26,7 @@ export class ImportCommand implements Command {
   }
 
   private async saveOffer(line: string): Promise<void> {
+    const columns = line.trim().split('\t');
     const [
       title,
       description,
@@ -42,10 +43,10 @@ export class ImportCommand implements Command {
       priceStr,
       goodsStr,
       userEmail,
-      _,
+      /* avatarUrl */,
       latitudeStr,
       longitudeStr
-    ] = line.trim().split('\t');
+    ] = columns;
 
     const user = await this.userService.findByEmail(userEmail);
     if (!user) {

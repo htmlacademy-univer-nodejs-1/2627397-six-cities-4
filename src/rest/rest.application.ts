@@ -22,6 +22,7 @@ export class RestApplication {
     @inject(Component.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
     @inject(Component.UserController) private readonly userController: BaseController,
     @inject(Component.OfferController) private readonly offerController: BaseController,
+    @inject(Component.CommentController) private readonly commentController: BaseController,
   ) {
     this.expressApp = express();
   }
@@ -49,6 +50,7 @@ export class RestApplication {
     this.logger.info('Initializing controllers...');
     this.expressApp.use('/users', this.userController.router);
     this.expressApp.use('/offers', this.offerController.router);
+    this.expressApp.use('/comments', this.commentController.router);
     this.logger.info('Controllers initialized.');
   }
 

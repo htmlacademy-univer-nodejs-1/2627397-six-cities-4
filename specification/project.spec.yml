@@ -55,7 +55,7 @@ components:
         host:
           type: string
           format: objectid
-          pattern: "^[a-fA-F0-9]{24}$" # Ensure host is a valid ObjectId string
+          pattern: "^[a-fA-F0-9]{24}$"
         commentCount:
           type: integer
         latitude:
@@ -119,6 +119,32 @@ components:
         - content
         - createdAt
         - user
+
+    CreateCommentDto:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 5
+          maxLength: 1024
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        userId:
+          type: string
+          format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
+        offerId:
+          type: string
+          format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
+      required:
+        - content
+        - rating
+        - userId
+        - offerId
+
 paths:
   /offers:
     get:
@@ -341,9 +367,11 @@ paths:
         - name: "offerId"
           in: "path"
           description: "ID предложения"
-          required: false
+          required: true
           schema:
             type: string
+            format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
         - name: "limit"
           in: "query"
           description: "Количество комментариев"
@@ -357,7 +385,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Comment"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
   /comments:
     post:
       summary: "Добавление комментария"
@@ -371,12 +401,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                content:
-                  type: string
-              required:
-                - content
+              $ref: "#/components/schemas/CreateCommentDto"
       responses:
         "201":
           description: "Комментарий успешно добавлен"

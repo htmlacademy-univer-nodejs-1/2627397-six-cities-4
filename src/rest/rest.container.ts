@@ -19,6 +19,7 @@ import { ExceptionFilter } from '../shared/exception-filter/exception-filter.js'
 import { UserController } from '../shared/modules/user/user.controller.js';
 import { BaseController } from '../shared/controller/base.controller.js';
 import OfferController from '../shared/modules/offer/offer.controller.js';
+import { CommentController } from '../shared/modules/comment/comment.controller.js';
 
 export function createAppContainer(): Container {
   const container = new Container();
@@ -41,6 +42,7 @@ export function createAppContainer(): Container {
 
   container.bind<BaseController>(Component.UserController).to(UserController).inSingletonScope();
   container.bind<BaseController>(Component.OfferController).to(OfferController).inSingletonScope();
+  container.bind<BaseController>(Component.CommentController).to(CommentController).inSingletonScope();
 
   container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
 
