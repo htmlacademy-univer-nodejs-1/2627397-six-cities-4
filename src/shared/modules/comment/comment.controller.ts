@@ -1,8 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Response, Request } from 'express';
-import { StatusCodes } from 'http-status-codes';
 import { BaseController } from '../../controller/base.controller.js';
-import { HttpError } from '../../errors/http-error.js';
 import { fillDTO } from '../../helpers/common.js';
 import { HttpMethod } from '../../types/http-methods.enum.js';
 import { CommentService } from './comment-service.interface.js';
@@ -14,6 +12,7 @@ import { CommentRdo } from './rdo/comment.rdo.js';
 import { ParamOfferId } from '../../types/offer-param-id.js';
 import { ValidateDtoMiddleware } from '../../middlewares/validate-dto.middleware.js';
 import { ValidateObjectIdMiddleware } from '../../middlewares/validate-objectid.middleware.js';
+import { DocumentExistsMiddleware } from '../../middlewares/document-exists.middleware.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -35,7 +34,10 @@ export class CommentController extends BaseController {
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.listByOffer,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]
     });
   }
 
@@ -43,14 +45,6 @@ export class CommentController extends BaseController {
     { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateCommentDto>,
     res: Response
   ): Promise<void> {
-    if (!await this.offerService.exists(body.offerId)) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${body.offerId} not found.`,
-        'CommentController'
-      );
-    }
-
     const comment = await this.commentService.create(body);
     await this.offerService.incCommentCount(body.offerId);
     this.created(res, fillDTO(CommentRdo, comment));

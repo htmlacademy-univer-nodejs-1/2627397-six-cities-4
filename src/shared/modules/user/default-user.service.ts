@@ -39,4 +39,20 @@ export class DefaultUserService implements UserService {
     const existing = await this.findByEmail(dto.email);
     return existing ?? this.create(dto, salt);
   }
+
+  public async updateAvatar(userId: string, avatarUrl: string): Promise<UserEntity | null> {
+    const user = await this.model.findById(userId).exec();
+
+    if (!user) {
+      return null;
+    }
+
+    user.avatarUrl = avatarUrl;
+    await user.save();
+    return user;
+  }
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.model.exists({ _id: documentId })) !== null;
+  }
 }

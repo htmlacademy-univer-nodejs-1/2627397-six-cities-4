@@ -443,6 +443,50 @@ paths:
                 $ref: "#/components/schemas/User"
         "400":
           description: "Ошибка валидации данных"
+
+  /users/avatar/{userId}:
+    post:
+      summary: "Загрузка аватара пользователя"
+      operationId: "uploadUserAvatar"
+      tags:
+        - "User"
+      parameters:
+        - name: "userId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+            format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+            encoding:
+              avatar:
+                contentType: image/png, image/jpeg, image/jpg
+      responses:
+        "201":
+          description: "Аватар успешно загружен"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  avatarUrl:
+                    type: string
+                    format: uri
+        "400":
+          description: "Файл не загружен"
+        "404":
+          description: "Пользователь не найден"
+
   /auth/login:
     post:
       summary: "Вход в аккаунт"
