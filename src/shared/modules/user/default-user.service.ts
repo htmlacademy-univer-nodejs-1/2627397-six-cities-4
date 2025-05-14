@@ -23,16 +23,13 @@ export class DefaultUserService implements UserService {
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = new this.model({
-      email: dto.email,
-      firstname: dto.firstname,
-      lastname: dto.lastname,
-      avatarUrl: dto.avatarUrl,
-      type: dto.type
-    } as UserEntity);
+      ...dto,
+      avatarUrl: dto.avatarUrl || '/static/default-avatar.png'
+    });
     user.setPassword(dto.password, salt);
     await user.save();
     this.logger.info(`User created: ${user.email}`);
-    return user;
+    return user as DocumentType<UserEntity>;
   }
 
   public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -40,7 +37,7 @@ export class DefaultUserService implements UserService {
     return existing ?? this.create(dto, salt);
   }
 
-  public async updateAvatar(userId: string, avatarUrl: string): Promise<UserEntity | null> {
+  public async updateAvatar(userId: string, avatarUrl: string): Promise<DocumentType<UserEntity> | null> {
     const user = await this.model.findById(userId).exec();
 
     if (!user) {
@@ -49,7 +46,7 @@ export class DefaultUserService implements UserService {
 
     user.avatarUrl = avatarUrl;
     await user.save();
-    return user;
+    return user as DocumentType<UserEntity>;
   }
 
   public async exists(documentId: string): Promise<boolean> {

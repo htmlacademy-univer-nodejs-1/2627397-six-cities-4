@@ -91,6 +91,6 @@ export class UserController extends BaseController {
       return;
     }
     const updatedUser = await this.userService.updateAvatar(userId, `/static/${req.file.filename}`);
-    res.status(StatusCodes.CREATED).json({ avatarUrl: updatedUser?.avatarUrl });
+    res.status(StatusCodes.CREATED).json({ avatarUrl: updatedUser?.avatarUrl || '/static/default-avatar.png' });
   }
 }

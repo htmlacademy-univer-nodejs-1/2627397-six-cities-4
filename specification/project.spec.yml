@@ -92,16 +92,19 @@ components:
           format: email
         name:
           type: string
+          minLength: 1
+          maxLength: 15
         avatarUrl:
           type: string
           format: uri
-        isPro:
-          type: boolean
+          pattern: '\.(jpg|png)$'
+        type:
+          type: string
+          enum: [usual, pro]
       required:
         - email
         - name
-        - avatarUrl
-        - isPro
+        - type
 
     Comment:
       type: object
@@ -144,6 +147,33 @@ components:
         - rating
         - userId
         - offerId
+
+    CreateUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+        password:
+          type: string
+          minLength: 6
+          maxLength: 12
+        type:
+          type: string
+          enum: [usual, pro]
+        avatarUrl:
+          type: string
+          format: uri
+          pattern: '\.(jpg|png)$'
+      required:
+        - email
+        - name
+        - password
+        - type
 
 paths:
   /offers:
@@ -413,7 +443,7 @@ paths:
           description: "Ошибка валидации данных"
         "401":
           description: "Неавторизованный запрос"
-  /users:
+  /users/register:
     post:
       summary: "Создание нового пользователя"
       operationId: "createUser"
@@ -424,16 +454,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-              required:
-                - email
-                - password
+              $ref: "#/components/schemas/CreateUserDto"
       responses:
         "201":
           description: "Пользователь успешно создан"
