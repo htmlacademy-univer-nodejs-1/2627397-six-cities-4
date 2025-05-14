@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize, IsDateString, IsLatitude, IsLongitude } from 'class-validator';
 
 const GOODS_LIST = [
   'Breakfast',
@@ -10,6 +10,8 @@ const GOODS_LIST = [
   'Fridge'
 ];
 
+const CITIES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
+
 export class CreateOfferDto {
   @IsString()
   @Length(10, 100)
@@ -19,29 +21,11 @@ export class CreateOfferDto {
   @Length(20, 1024)
   description!: string;
 
-  @IsNumber()
-  @Min(100)
-  @Max(100000)
-  price!: number;
-
-  @IsIn(['apartment', 'house', 'room', 'hotel'])
-  type!: 'apartment' | 'house' | 'room' | 'hotel';
-
-  @IsBoolean()
-  isPremium!: boolean;
-
-  @IsBoolean()
-  isFavorite!: boolean;
-
-  @IsNumber({ maxDecimalPlaces: 1 })
-  @Min(1)
-  @Max(5)
-  rating!: number;
-
-  @IsString()
+  @IsDateString()
   createdAt!: string;
 
-  @IsIn(['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'])
+  @IsString()
+  @IsIn(CITIES)
   city!: string;
 
   @IsString()
@@ -53,9 +37,20 @@ export class CreateOfferDto {
   @IsString({ each: true })
   images!: string[];
 
-  @IsArray()
-  @IsIn(GOODS_LIST, { each: true })
-  goods!: string[];
+  @IsBoolean()
+  isPremium!: boolean;
+
+  @IsBoolean()
+  isFavorite!: boolean;
+
+  @IsNumber()
+  @Min(1)
+  @Max(5)
+  rating!: number;
+
+  @IsString()
+  @IsIn(['apartment', 'house', 'room', 'hotel'])
+  type!: string;
 
   @IsInt()
   @Min(1)
@@ -67,15 +62,24 @@ export class CreateOfferDto {
   @Max(10)
   maxAdults!: number;
 
+  @IsInt()
+  @Min(100)
+  @Max(100000)
+  price!: number;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsIn(GOODS_LIST, { each: true })
+  goods!: string[];
+
   @IsMongoId()
   host!: string;
 
-  @IsInt()
-  commentCount!: number;
-
   @IsNumber()
+  @IsLatitude()
   latitude!: number;
 
   @IsNumber()
+  @IsLongitude()
   longitude!: number;
 }

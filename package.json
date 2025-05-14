@@ -11,6 +11,7 @@
   "scripts": {
     "start:dev": "node --loader ts-node/esm ./src/main.rest.ts | pino-pretty --colorize --translateTime SYS:standard",
     "mock:server": "json-server mocks/mock-server-data.json --port 3000",
+    "cli": "npm run build && node ./dist/main.cli.js",
     "start": "npm run build && node ./dist/main.js",
     "build": "npm run clean && npm run compile",
     "lint": "eslint src/ --ext .ts",

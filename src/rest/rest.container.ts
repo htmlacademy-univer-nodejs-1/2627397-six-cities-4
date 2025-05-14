@@ -24,7 +24,7 @@ import { CommentController } from '../shared/modules/comment/comment.controller.
 export function createAppContainer(): Container {
   const container = new Container();
 
-  container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
+  container.bind<Logger>(Component.Logger).toConstantValue(new PinoLogger(true));
 
   container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
   container.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();

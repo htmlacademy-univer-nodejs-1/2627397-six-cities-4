@@ -14,14 +14,20 @@ export class RestConfig implements Config<RestSchema> {
   ) {
     const parsedOutput = dotenv.config();
     if (parsedOutput.error) {
-      throw new Error('Can\'t read .env file');
+      throw new Error('Не удалось загрузить .env файл');
     }
 
-    configRestSchema.load({});
-    configRestSchema.validate({ allowed: 'strict', output: this.logger.info });
+    try {
+      configRestSchema.load({});
+      configRestSchema.validate({ allowed: 'strict', output: this.logger.info });
+    } catch (error) {
+      const err = error as Error;
+      const missingVars = err.message.match(/[A-Z_]+(?=:)/g) || [];
+      throw new Error(`Отсутствуют переменные окружения: ${missingVars.join(', ')}\n`);
+    }
 
     this.config = configRestSchema.getProperties();
-    this.logger.info('Configuration file successfully parsed');
+    this.logger.debug('Конфигурация успешно загружена');
   }
 
   public get<T extends keyof RestSchema>(key: T): RestSchema[T] {
