@@ -1,61 +1,81 @@
-import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+
+const GOODS_LIST = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge'
+];
 
 export class CreateOfferDto {
   @IsString()
-  @Length(1, 255)
-    title!: string;
+  @Length(10, 100)
+  title!: string;
 
   @IsString()
-  @Length(1, 1024)
-    description!: string;
+  @Length(20, 1024)
+  description!: string;
 
   @IsNumber()
-    price!: number;
+  @Min(100)
+  @Max(100000)
+  price!: number;
 
   @IsIn(['apartment', 'house', 'room', 'hotel'])
-    type!: 'apartment' | 'house' | 'room' | 'hotel';
+  type!: 'apartment' | 'house' | 'room' | 'hotel';
 
   @IsBoolean()
-    isPremium!: boolean;
+  isPremium!: boolean;
 
   @IsBoolean()
-    isFavorite!: boolean;
+  isFavorite!: boolean;
 
-  @IsNumber()
-    rating!: number;
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(1)
+  @Max(5)
+  rating!: number;
 
   @IsString()
-    createdAt!: string;
+  createdAt!: string;
 
   @IsIn(['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'])
-    city!: string;
+  city!: string;
 
   @IsString()
-    previewImage!: string;
+  previewImage!: string;
 
   @IsArray()
+  @ArrayMinSize(6)
+  @ArrayMaxSize(6)
   @IsString({ each: true })
-    images!: string[];
+  images!: string[];
 
   @IsArray()
-  @IsString({ each: true })
-    goods!: string[];
+  @IsIn(GOODS_LIST, { each: true })
+  goods!: string[];
 
   @IsInt()
-    bedrooms!: number;
+  @Min(1)
+  @Max(8)
+  bedrooms!: number;
 
   @IsInt()
-    maxAdults!: number;
+  @Min(1)
+  @Max(10)
+  maxAdults!: number;
 
   @IsMongoId()
-    host!: string;
+  host!: string;
 
   @IsInt()
-    commentCount!: number;
+  commentCount!: number;
 
   @IsNumber()
-    latitude!: number;
+  latitude!: number;
 
   @IsNumber()
-    longitude!: number;
+  longitude!: number;
 }

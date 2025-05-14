@@ -3,16 +3,16 @@ import { IsString, Length, IsInt, Min, Max, IsMongoId } from 'class-validator';
 export class CreateCommentDto {
   @IsString()
   @Length(5, 1024)
-    content!: string;
+  content!: string;
 
   @IsInt()
   @Min(1)
   @Max(5)
-    rating!: number;
+  rating!: number;
 
   @IsMongoId()
-    userId!: string;
+  userId!: string;
 
   @IsMongoId()
-    offerId!: string;
+  offerId!: string;
 }

@@ -1,70 +1,90 @@
-import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+
+const GOODS_LIST = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge'
+];
 
 export class UpdateOfferDto {
   @IsMongoId()
-    id!: string;
+  id!: string;
 
   @IsOptional()
   @IsString()
-  @Length(1, 255)
-    title?: string;
+  @Length(10, 100)
+  title?: string;
 
   @IsOptional()
   @IsString()
-  @Length(1, 1024)
-    description?: string;
+  @Length(20, 1024)
+  description?: string;
 
   @IsOptional()
   @IsIn(['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'])
-    city?: string;
+  city?: string;
 
   @IsOptional()
   @IsString()
-    previewImage?: string;
+  previewImage?: string;
 
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(6)
+  @ArrayMaxSize(6)
   @IsString({ each: true })
-    images?: string[];
+  images?: string[];
 
   @IsOptional()
   @IsBoolean()
-    isPremium?: boolean;
+  isPremium?: boolean;
 
   @IsOptional()
   @IsBoolean()
-    isFavorite?: boolean;
+  isFavorite?: boolean;
 
   @IsOptional()
-  @IsNumber()
-    rating?: number;
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(1)
+  @Max(5)
+  rating?: number;
 
   @IsOptional()
   @IsIn(['apartment', 'house', 'room', 'hotel'])
-    type?: string;
+  type?: string;
 
   @IsOptional()
   @IsInt()
-    bedrooms?: number;
+  @Min(1)
+  @Max(8)
+  bedrooms?: number;
 
   @IsOptional()
   @IsInt()
-    maxAdults?: number;
+  @Min(1)
+  @Max(10)
+  maxAdults?: number;
 
   @IsOptional()
   @IsNumber()
-    price?: number;
+  @Min(100)
+  @Max(100000)
+  price?: number;
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-    goods?: string[];
+  @IsIn(GOODS_LIST, { each: true })
+  goods?: string[];
 
   @IsOptional()
   @IsNumber()
-    latitude?: number;
+  latitude?: number;
 
   @IsOptional()
   @IsNumber()
-    longitude?: number;
+  longitude?: number;
 }
