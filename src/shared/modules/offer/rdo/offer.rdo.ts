@@ -5,19 +5,19 @@ export class OfferRdo {
   public id!: string;
 
   @Expose()
+  public price!: number;
+
+  @Expose()
   public title!: string;
 
   @Expose()
-  public description!: string;
+  public type!: string;
 
   @Expose()
   public city!: string;
 
   @Expose()
   public previewImage!: string;
-
-  @Expose()
-  public images!: string[];
 
   @Expose()
   public isPremium!: boolean;
@@ -29,23 +29,32 @@ export class OfferRdo {
   public rating!: number;
 
   @Expose()
-  public type!: string;
+  public commentCount!: number;
 
   @Expose()
+  public createdAt!: string;
+
+  @Expose({ groups: ['detailed'] })
+  public description!: string;
+
+  @Expose({ groups: ['detailed'] })
+  public images!: string[];
+
+  @Expose({ groups: ['detailed'] })
   public bedrooms!: number;
 
-  @Expose()
+  @Expose({ groups: ['detailed'] })
   public maxAdults!: number;
 
-  @Expose()
-  public price!: number;
-
-  @Expose()
+  @Expose({ groups: ['detailed'] })
   public goods!: string[];
 
-  @Expose()
+  @Expose({ groups: ['detailed'] })
+  public host!: string;
+
+  @Expose({ groups: ['detailed'] })
   public latitude!: number;
 
-  @Expose()
+  @Expose({ groups: ['detailed'] })
   public longitude!: number;
 }

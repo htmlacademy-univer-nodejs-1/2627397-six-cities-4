@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
 
 const GOODS_LIST = [
   'Breakfast',
@@ -11,9 +11,6 @@ const GOODS_LIST = [
 ];
 
 export class UpdateOfferDto {
-  @IsMongoId()
-  id!: string;
-
   @IsOptional()
   @IsString()
   @Length(10, 100)

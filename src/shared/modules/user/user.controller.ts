@@ -17,6 +17,7 @@ import { UploadFileMiddleware } from '../../middlewares/upload-file.middleware.j
 import { ValidateObjectIdMiddleware } from '../../middlewares/validate-objectid.middleware.js';
 import { DocumentExistsMiddleware } from '../../middlewares/document-exists.middleware.js';
 import { ParamUserId } from '../../types/user-param-id.js';
+import { LoginUserDto } from './dto/login-user.dto.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -33,7 +34,24 @@ export class UserController extends BaseController {
       handler: this.create,
       middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
     });
-    this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Post,
+      handler: this.login,
+      middlewares: [new ValidateDtoMiddleware(LoginUserDto)]
+    });
+    this.addRoute({
+      path: '/logout',
+      method: HttpMethod.Post,
+      handler: this.logout,
+      middlewares: []
+    });
+    this.addRoute({
+      path: '/check',
+      method: HttpMethod.Get,
+      handler: this.checkAuth,
+      middlewares: []
+    });
     this.addRoute({
       path: '/avatar/:userId',
       method: HttpMethod.Post,
@@ -62,23 +80,16 @@ export class UserController extends BaseController {
     this.created(res, fillDTO(UserRdo, result));
   }
 
-  public async login(
-    { body }: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDto>,
-    _res: Response,
-  ): Promise<void> {
-    const existsUser = await this.userService.findByEmail(body.email);
-    if (!existsUser) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with email ${body.email} not found.`,
-        'UserController',
-      );
-    }
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController',
-    );
+  public async login(_req: Request, _res: Response): Promise<void> {
+    throw new Error('Not implemented');
+  }
+
+  public async logout(_req: Request, _res: Response): Promise<void> {
+    throw new Error('Not implemented');
+  }
+
+  public async checkAuth(_req: Request, _res: Response): Promise<void> {
+    throw new Error('Not implemented');
   }
 
   public async uploadAvatar(

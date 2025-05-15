@@ -26,7 +26,7 @@ export class DefaultUserService implements UserService {
       ...dto,
       avatarUrl: dto.avatarUrl || '/static/default-avatar.png'
     });
-    user.setPassword(dto.password, salt);
+    user.setPassword(salt);
     await user.save();
     this.logger.info(`User created: ${user.email}`);
     return user as DocumentType<UserEntity>;
