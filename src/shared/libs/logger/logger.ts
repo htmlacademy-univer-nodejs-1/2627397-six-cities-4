@@ -6,9 +6,11 @@ import { getCurrentModuleDirectoryPath } from '../../utils/index.js';
 
 @injectable()
 export class PinoLogger implements Logger {
+  public isDebug: boolean;
   private readonly logger: PinoInstance;
 
-  constructor() {
+  constructor(isDebug: boolean = false) {
+    this.isDebug = isDebug;
     const modulePath = getCurrentModuleDirectoryPath();
     const logFilePath = 'logs/rest.log';
     const destination = resolve(modulePath, '../../../', logFilePath);
@@ -33,7 +35,9 @@ export class PinoLogger implements Logger {
   }
 
   public debug(message: string, ...args: unknown[]): void {
-    this.logger.debug(message, ...args);
+    if (this.isDebug) {
+      this.logger.debug(message, ...args);
+    }
   }
 
   public error(message: string, error: Error, ...args: unknown[]): void {

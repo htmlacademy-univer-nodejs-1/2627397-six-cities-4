@@ -1,13 +1,55 @@
 {
 "api": {
-  "titles": ["Квартира 1", "Квартира 2", "Квартира 3"],
-  "descriptions": ["Квартира в центре", "Кквартира с балконом", "Современная квартира возле парка"],
+  "titles": [
+    "Уютная квартира в центре города", 
+    "Современные апартаменты с видом на парк",
+    "Просторная квартира с балконом"
+  ],
+  "descriptions": [
+    "Светлая уютная квартира в самом центре города, рядом парки, магазины и кафе. Отличная транспортная доступность.",
+    "Современная квартира с дизайнерским ремонтом, просторной гостиной и полностью оборудованной кухней. В пешей доступности метро.",
+    "Просторная квартира с панорамным остеклением и большим балконом. Из окон открывается прекрасный вид на город и парк."
+  ],
   "cities": ["Paris", "Cologne", "Brussels", "Amsterdam", "Hamburg", "Dusseldorf"],
   "previewImages": ["preview1.jpg", "preview2.jpg", "preview3.jpg"],
-  "images": ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg", "image6.jpg"],
   "types": ["apartment", "house", "room", "hotel"],
   "goods": ["Breakfast", "Air conditioning", "Laptop friendly workspace", "Baby seat", "Washer", "Towels", "Fridge"],
   "emails": ["user1@example.com", "user2@example.com", "user3@example.com"],
-  "avatars": ["avatar1.png", "avatar2.png", "avatar3.png"]
+  "avatars": ["avatar1.png", "avatar2.png", "avatar3.png"],
+  "images": {
+    "items": ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg", "image6.jpg"],
+    "count": 6
+  },
+  "price": {
+    "min": 100,
+    "max": 100000
+  },
+  "rating": {
+    "min": 1,
+    "max": 5,
+    "precision": 0.1
+  },
+  "bedrooms": {
+    "min": 1,
+    "max": 8
+  },
+  "adults": {
+    "min": 1,
+    "max": 10
+  },
+  "location": {
+    "radius": {
+      "min": 0.01,
+      "max": 10
+    },
+    "coords": {
+      "Paris": [48.85661, 2.351499],
+      "Cologne": [50.938361, 6.959974],
+      "Brussels": [50.846557, 4.351697],
+      "Amsterdam": [52.370216, 4.895168],
+      "Hamburg": [53.550341, 10.000654],
+      "Dusseldorf": [51.225402, 6.776314]
+    }
+  }
 }
 }

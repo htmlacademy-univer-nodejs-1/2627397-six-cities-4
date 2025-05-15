@@ -1,22 +1,62 @@
 import { prop, modelOptions, defaultClasses, getModelForClass } from '@typegoose/typegoose';
+import { CreateUserDto } from './dto/create-user.dto.js';
+import * as crypto from 'node:crypto';
 
-@modelOptions({ schemaOptions: { collection: 'users', timestamps: true } })
+@modelOptions({
+  schemaOptions: {
+    collection: 'users',
+    timestamps: true
+  }
+})
 export class UserEntity extends defaultClasses.TimeStamps {
-  @prop({ required: true, unique: true }) public email!: string;
-  @prop({ required: true }) public firstname!: string;
-  @prop({ required: true }) public lastname!: string;
-  @prop() public avatarUrl?: string;
-  @prop() private password?: string;
-  @prop({ required: true, enum: ['usual','pro'], default: 'usual' }) public type!: 'usual' | 'pro';
+  private readonly salt!: string;
 
-  public setPassword(raw: string, salt: string) {
-    this.password = raw + salt;
+  @prop({
+    required: true,
+    unique: true,
+    match: [/^.+@.+$/, 'Email must be valid']
+  })
+  public email!: string;
+
+  @prop({ required: true, minlength: 1, maxlength: 15 })
+  public name!: string;
+
+  @prop()
+  public avatarUrl?: string;
+
+  @prop({
+    required: true,
+    minlength: 64,
+    maxlength: 64
+  })
+  private password!: string;
+
+  @prop({ required: true, enum: ['usual', 'pro'], default: 'usual' })
+  public type!: 'usual' | 'pro';
+
+  constructor(dto: CreateUserDto, salt: string) {
+    super();
+    this.salt = salt;
+    this.email = dto.email;
+    this.name = dto.name;
+    this.type = dto.type;
+    this.setPassword(dto.password);
   }
 
-  public checkPassword(raw: string, salt: string): boolean {
-    return this.password === raw + salt;
+  public setPassword(password: string) {
+    this.password = crypto
+      .createHmac('sha256', this.salt)
+      .update(password)
+      .digest('hex');
   }
 
+  public verifyPassword(password: string) {
+    const hashPassword = crypto
+      .createHmac('sha256', this.salt)
+      .update(password)
+      .digest('hex');
+    return hashPassword === this.password;
+  }
 }
 
 export const UserModel = getModelForClass(UserEntity);

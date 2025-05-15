@@ -15,18 +15,18 @@ export class ExceptionFilter implements ExceptionFilterInterface {
     this.logger.info('Register ExceptionFilter');
   }
 
-  private handleHttpError(error: HttpError, _req: Request, res: Response, _next: NextFunction) {
-    this.logger.error(`[${error.detail}]: ${error.httpStatusCode} — ${error.message}`, error);
+  private handleHttpError(error: HttpError, req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[${req.method} ${req.path}] ${error.detail}: ${error.httpStatusCode} — ${error.message}`, error);
     res
       .status(error.httpStatusCode)
       .json(createErrorObject(error.message));
   }
 
-  private handleOtherError(error: Error, _req: Request, res: Response, _next: NextFunction) {
-    this.logger.error(error.message, error);
+  private handleOtherError(error: Error, req: Request, res: Response, _next: NextFunction) {
+    this.logger.error(`[${req.method} ${req.path}] Internal error: ${error.message}`, error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json(createErrorObject(error.message));
+      .json(createErrorObject('Internal Server Error'));
   }
 
   public catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {

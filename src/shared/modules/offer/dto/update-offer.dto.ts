@@ -1,17 +1,24 @@
-import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, Length, Min, Max, ArrayMinSize, ArrayMaxSize } from 'class-validator';
+
+const GOODS_LIST = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge'
+];
 
 export class UpdateOfferDto {
-  @IsMongoId()
-    id!: string;
-
   @IsOptional()
   @IsString()
-  @Length(1, 255)
+  @Length(10, 100)
     title?: string;
 
   @IsOptional()
   @IsString()
-  @Length(1, 1024)
+  @Length(20, 1024)
     description?: string;
 
   @IsOptional()
@@ -24,6 +31,8 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsArray()
+  @ArrayMinSize(6)
+  @ArrayMaxSize(6)
   @IsString({ each: true })
     images?: string[];
 
@@ -36,7 +45,9 @@ export class UpdateOfferDto {
     isFavorite?: boolean;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 1 })
+  @Min(1)
+  @Max(5)
     rating?: number;
 
   @IsOptional()
@@ -45,19 +56,25 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsInt()
+  @Min(1)
+  @Max(8)
     bedrooms?: number;
 
   @IsOptional()
   @IsInt()
+  @Min(1)
+  @Max(10)
     maxAdults?: number;
 
   @IsOptional()
   @IsNumber()
+  @Min(100)
+  @Max(100000)
     price?: number;
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
+  @IsIn(GOODS_LIST, { each: true })
     goods?: string[];
 
   @IsOptional()

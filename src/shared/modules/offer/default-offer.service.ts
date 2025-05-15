@@ -6,21 +6,26 @@ import { Logger } from '../../libs/logger/logger.interface.js';
 import { Component } from '../../types/component.enum.js';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
+import { CommentEntity } from '../comment/comment.entity.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
+    @inject(Component.CommentModel) private readonly commentModel: types.ModelType<CommentEntity>,
   ) {}
 
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     const deletedOffer = await this.offerModel.findByIdAndDelete(offerId).exec();
     if (!deletedOffer) {
       this.logger.warn(`Offer with id ${offerId} not found for delete.`);
-    } else {
-      this.logger.info(`Offer with id ${offerId} deleted.`);
+      return null;
     }
+
+    await this.commentModel.deleteMany({ offerId }).exec();
+    this.logger.info(`Offer with id ${offerId} and its comments deleted.`);
+
     return deletedOffer;
   }
 
@@ -56,20 +61,24 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
-    const limitCount = count ?? 10;
+    const limitCount = count ?? 60;
     return this.offerModel
       .find()
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(limitCount)
       .exec();
   }
 
-  public async updateById(dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(dto.id, dto, { new: true }).exec();
+  public async updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+    return this.offerModel.findByIdAndUpdate(offerId, dto, { new: true }).exec();
   }
 
-  public async getPremium(): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find({ isPremium: true }).exec();
+  public async getPremium(city: string): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel
+      .find({ isPremium: true, city })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .exec();
   }
 
   public async calculateRating(rating: number, newRating: number, countRating: number, offerId: string): Promise<void> {

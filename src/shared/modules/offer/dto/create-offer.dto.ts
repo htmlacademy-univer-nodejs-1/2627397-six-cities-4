@@ -1,19 +1,41 @@
-import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsArray, IsInt, IsIn, IsMongoId, Length, Min, Max, ArrayMinSize, ArrayMaxSize, IsDateString, IsLatitude, IsLongitude } from 'class-validator';
+
+const GOODS_LIST = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat',
+  'Washer',
+  'Towels',
+  'Fridge'
+];
+
+const CITIES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'];
 
 export class CreateOfferDto {
   @IsString()
-  @Length(1, 255)
+  @Length(10, 100)
     title!: string;
 
   @IsString()
-  @Length(1, 1024)
+  @Length(20, 1024)
     description!: string;
 
-  @IsNumber()
-    price!: number;
+  @IsDateString()
+    createdAt!: string;
 
-  @IsIn(['apartment', 'house', 'room', 'hotel'])
-    type!: 'apartment' | 'house' | 'room' | 'hotel';
+  @IsString()
+  @IsIn(CITIES)
+    city!: string;
+
+  @IsString()
+    previewImage!: string;
+
+  @IsArray()
+  @ArrayMinSize(6)
+  @ArrayMaxSize(6)
+  @IsString({ each: true })
+    images!: string[];
 
   @IsBoolean()
     isPremium!: boolean;
@@ -22,40 +44,42 @@ export class CreateOfferDto {
     isFavorite!: boolean;
 
   @IsNumber()
+  @Min(1)
+  @Max(5)
     rating!: number;
 
   @IsString()
-    createdAt!: string;
-
-  @IsIn(['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'])
-    city!: string;
-
-  @IsString()
-    previewImage!: string;
-
-  @IsArray()
-  @IsString({ each: true })
-    images!: string[];
-
-  @IsArray()
-  @IsString({ each: true })
-    goods!: string[];
+  @IsIn(['apartment', 'house', 'room', 'hotel'])
+    type!: string;
 
   @IsInt()
+  @Min(1)
+  @Max(8)
     bedrooms!: number;
 
   @IsInt()
+  @Min(1)
+  @Max(10)
     maxAdults!: number;
+
+  @IsInt()
+  @Min(100)
+  @Max(100000)
+    price!: number;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsIn(GOODS_LIST, { each: true })
+    goods!: string[];
 
   @IsMongoId()
     host!: string;
 
-  @IsInt()
-    commentCount!: number;
-
   @IsNumber()
+  @IsLatitude()
     latitude!: number;
 
   @IsNumber()
+  @IsLongitude()
     longitude!: number;
 }

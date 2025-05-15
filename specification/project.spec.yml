@@ -7,19 +7,21 @@ servers:
   - url: 'http://localhost:3000'
 components:
   schemas:
-    Offer:
+    OfferBase:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         title:
           type: string
+          minLength: 10
+          maxLength: 100
         description:
           type: string
+          minLength: 20
+          maxLength: 1024
         price:
-          type: number
-          format: float
+          type: integer
+          minimum: 100
+          maximum: 100000
         type:
           type: string
           enum: [apartment, house, room, hotel]
@@ -30,9 +32,9 @@ components:
         rating:
           type: number
           format: float
-        createdAt:
-          type: string
-          format: date-time
+          minimum: 1
+          maximum: 5
+          multipleOf: 0.1
         city:
           type: string
           enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
@@ -44,42 +46,62 @@ components:
           items:
             type: string
             format: uri
+          minItems: 6
+          maxItems: 6
         goods:
           type: array
           items:
             type: string
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+          minItems: 1
         bedrooms:
           type: integer
+          minimum: 1
+          maximum: 8
         maxAdults:
           type: integer
-        host:
-          type: string
-          format: objectid
-          pattern: "^[a-fA-F0-9]{24}$"
-        commentCount:
-          type: integer
+          minimum: 1
+          maximum: 10
         latitude:
           type: number
           format: float
+          minimum: -90
+          maximum: 90
         longitude:
           type: number
           format: float
-      required:
-        - title
-        - price
-        - type
-        - city
-        - previewImage
-        - bedrooms
-        - maxAdults
-        - host
-        - isPremium
-        - isFavorite
-        - rating
-        - createdAt
-        - commentCount
-        - latitude
-        - longitude
+          minimum: -180
+          maximum: 180
+
+    Offer:
+      allOf:
+        - $ref: '#/components/schemas/OfferBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            host:
+              type: string
+              format: objectid
+              pattern: "^[a-fA-F0-9]{24}$"
+            commentCount:
+              type: integer
+            createdAt:
+              type: string
+              format: date-time
+          required:
+            - id
+            - host
+            - commentCount
+            - createdAt
 
     User:
       type: object
@@ -87,38 +109,55 @@ components:
         id:
           type: string
           format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
         email:
           type: string
           format: email
         name:
           type: string
+          minLength: 1
+          maxLength: 15
         avatarUrl:
           type: string
           format: uri
-        isPro:
-          type: boolean
+          pattern: '\.(jpg|png)$'
+        type:
+          type: string
+          enum: [usual, pro]
       required:
         - email
         - name
-        - avatarUrl
-        - isPro
+        - type
 
     Comment:
       type: object
       properties:
         id:
           type: string
+          format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
         content:
           type: string
+          minLength: 5
+          maxLength: 1024
+          description: "Текст комментария"
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: "Рейтинг"
         createdAt:
           type: string
           format: date-time
+          description: "Дата публикации комментария"
         user:
           $ref: "#/components/schemas/User"
+          description: "Автор комментария"
       required:
         - content
-        - createdAt
+        - rating
         - user
+        - createdAt
 
     CreateCommentDto:
       type: object
@@ -145,6 +184,91 @@ components:
         - userId
         - offerId
 
+    CreateUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+        password:
+          type: string
+          minLength: 6
+          maxLength: 12
+        type:
+          type: string
+          enum: [usual, pro]
+        avatarUrl:
+          type: string
+          format: uri
+          pattern: '\.(jpg|png)$'
+      required:
+        - email
+        - name
+        - password
+        - type
+
+    UpdateOfferDto:
+      allOf:
+        - $ref: '#/components/schemas/OfferBase'
+      type: object
+      x-typescript-type: 'Partial<OfferBase>'
+
+    OffersListRdo:
+      type: object
+      properties:
+        id:
+          type: string
+        price:
+          type: number
+        title:
+          type: string
+        type:
+          type: string
+        isFavorite:
+          type: boolean
+        createdAt:
+          type: string
+        city:
+          type: string
+        previewImage:
+          type: string
+        isPremium:
+          type: boolean
+        rating:
+          type: number
+        commentCount:
+          type: integer
+      required:
+        - id
+        - price
+        - title
+        - type
+        - isFavorite
+        - createdAt
+        - city
+        - previewImage
+        - isPremium
+        - rating
+        - commentCount
+
+    LoginUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+          maxLength: 12
+      required:
+        - email
+        - password
+
 paths:
   /offers:
     get:
@@ -159,14 +283,7 @@ paths:
           required: false
           schema:
             type: integer
-            default: 10
-        - name: "sort"
-          in: "query"
-          description: "Сортировка предложений"
-          required: false
-          schema:
-            type: string
-            default: "createdAt_desc"
+            default: 60
       responses:
         "200":
           description: "Список предложений"
@@ -175,7 +292,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Offer"
+                  $ref: "#/components/schemas/OffersListRdo"
 
     post:
       summary: "Создание нового предложения"
@@ -201,29 +318,6 @@ paths:
           description: "Ошибка валидации данных"
         "401":
           description: "Неавторизованный запрос"
-
-    patch:
-      summary: "Обновление предложения"
-      operationId: "updateOffer"
-      tags:
-        - "Offer"
-      security:
-        - BearerAuth: []
-      requestBody:
-        description: "Данные для обновления предложения"
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Offer"
-      responses:
-        "200":
-          description: "Предложение успешно обновлено"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Offer"
-        "404":
-          description: "Предложение не найдено"
 
   /offers/{offerId}:
     get:
@@ -254,41 +348,77 @@ paths:
       operationId: "deleteOffer"
       tags:
         - "Offer"
-      security:
-        - BearerAuth: []
       parameters:
         - name: "offerId"
           in: "path"
           required: true
           schema:
             type: string
+            format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
       responses:
         "204":
           description: "Предложение успешно удалено"
+        "403":
+          description: "Отказано в доступе"
+        "404":
+          description: "Предложение не найдено"
+
+    patch:
+      summary: "Обновление предложения"
+      operationId: "updateOffer"
+      tags:
+        - "Offer"
+      parameters:
+        - name: "offerId"
+          in: "path"
+          required: true
+          schema:
+            type: string
+            format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
+      requestBody:
+        description: "Данные для обновления предложения"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOfferDto"
+      responses:
+        "200":
+          description: "Предложение успешно обновлено"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
         "404":
           description: "Предложение не найдено"
 
   /offers/premium:
     get:
-      summary: "Премиальные предложения"
+      summary: "Премиальные предложения по городу"
       operationId: "getPremiumOffers"
       tags:
         - "Offer"
       parameters:
         - name: "city"
           in: "query"
+          description: "Город"
           required: true
           schema:
             type: string
+            enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
       responses:
         "200":
-          description: "Список премиальных предложений"
+          description: "Список премиальных предложений (максимум 3), отсортированных по дате"
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Offer"
+                  $ref: "#/components/schemas/OffersListRdo"
+                maxItems: 3
+        "400":
+          description: "Не указан обязательный параметр city"
 
   /favorites:
     get:
@@ -372,22 +502,18 @@ paths:
             type: string
             format: objectid
             pattern: "^[a-fA-F0-9]{24}$"
-        - name: "limit"
-          in: "query"
-          description: "Количество комментариев"
-          required: false
-          schema:
-            type: integer
-            default: 50
       responses:
         "200":
-          description: "Список комментариев"
+          description: "Список последних 50 комментариев, отсортированных по дате (desc)"
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Comment"
+                maxItems: 50
+        "404":
+          description: "Предложение не найдено"
   /comments:
     post:
       summary: "Добавление комментария"
@@ -413,7 +539,7 @@ paths:
           description: "Ошибка валидации данных"
         "401":
           description: "Неавторизованный запрос"
-  /users:
+  /users/register:
     post:
       summary: "Создание нового пользователя"
       operationId: "createUser"
@@ -424,16 +550,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-              required:
-                - email
-                - password
+              $ref: "#/components/schemas/CreateUserDto"
       responses:
         "201":
           description: "Пользователь успешно создан"
@@ -487,27 +604,18 @@ paths:
         "404":
           description: "Пользователь не найден"
 
-  /auth/login:
+  /users/login:
     post:
       summary: "Вход в аккаунт"
-      operationId: "login"
+      operationId: "loginUser"
       tags:
-        - "Auth"
+        - "User"
       requestBody:
-        description: "Данные для аутентификации"
+        description: "Данные для входа"
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-              required:
-                - email
-                - password
+              $ref: "#/components/schemas/LoginUserDto"
       responses:
         "200":
           description: "Успешная аутентификация"
@@ -520,14 +628,35 @@ paths:
                     type: string
         "401":
           description: "Неверный логин или пароль"
-  /auth/logout:
+
+  /users/logout:
     post:
       summary: "Выход из аккаунта"
-      operationId: "logout"
+      operationId: "logoutUser"
       tags:
-        - "Auth"
+        - "User"
       security:
         - BearerAuth: []
       responses:
         "204":
-          description: "Сеанс завершен"
+          description: "Успешный выход"
+
+  /users/check:
+    get:
+      summary: "Проверка состояния пользователя"
+      operationId: "checkUser"
+      tags:
+        - "User"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Информация о пользователе"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: "Не авторизован"
+
+
