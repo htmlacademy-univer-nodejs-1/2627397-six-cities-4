@@ -7,6 +7,7 @@ import { DefaultUserService } from '../shared/modules/user/default-user.service.
 import { OfferModel } from '../shared/modules/offer/offer.entity.js';
 import { DefaultOfferService } from '../shared/modules/offer/default-offer.service.js';
 import { Logger, ConsoleLogger } from '../shared/libs/logger/index.js';
+import { CommentModel } from '../shared/modules/comment/comment.entity.js';
 
 export function createCliContainer(): Container {
   const container = new Container();
@@ -17,6 +18,8 @@ export function createCliContainer(): Container {
 
   container.bind(Component.UserModel).toConstantValue(UserModel);
   container.bind(Component.UserService).to(DefaultUserService).inSingletonScope();
+
+  container.bind(Component.CommentModel).toConstantValue(CommentModel);
 
   container.bind(Component.OfferModel).toConstantValue(OfferModel);
   container.bind(Component.OfferService).to(DefaultOfferService).inSingletonScope();

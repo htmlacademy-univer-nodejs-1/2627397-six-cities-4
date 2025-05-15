@@ -25,7 +25,7 @@ export class DefaultOfferService implements OfferService {
 
     await this.commentModel.deleteMany({ offerId }).exec();
     this.logger.info(`Offer with id ${offerId} and its comments deleted.`);
-    
+
     return deletedOffer;
   }
 

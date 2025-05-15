@@ -76,7 +76,8 @@ export class UserController extends BaseController {
         'UserController'
       );
     }
-    const result = await this.userService.create(body, this.configService.get('SALT'));
+    const salt = this.configService.get('SALT');
+    const result = await this.userService.create(body, salt);
     this.created(res, fillDTO(UserRdo, result));
   }
 

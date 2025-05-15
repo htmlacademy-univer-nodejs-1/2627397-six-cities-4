@@ -12,7 +12,7 @@ export type RestSchema = {
   DB_PORT: string;
   DB_NAME: string;
   UPLOAD_DIRECTORY: string;
-} 
+}
 
 export const configRestSchema = convict<RestSchema>({
   PORT: {

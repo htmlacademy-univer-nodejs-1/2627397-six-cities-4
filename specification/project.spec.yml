@@ -19,8 +19,7 @@ components:
           minLength: 20
           maxLength: 1024
         price:
-          type: number
-          format: float
+          type: integer
           minimum: 100
           maximum: 100000
         type:
@@ -35,6 +34,7 @@ components:
           format: float
           minimum: 1
           maximum: 5
+          multipleOf: 0.1
         city:
           type: string
           enum: [Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf]
@@ -72,9 +72,13 @@ components:
         latitude:
           type: number
           format: float
+          minimum: -90
+          maximum: 90
         longitude:
           type: number
           format: float
+          minimum: -180
+          maximum: 180
 
     Offer:
       allOf:
@@ -87,6 +91,7 @@ components:
             host:
               type: string
               format: objectid
+              pattern: "^[a-fA-F0-9]{24}$"
             commentCount:
               type: integer
             createdAt:
@@ -104,6 +109,7 @@ components:
         id:
           type: string
           format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
         email:
           type: string
           format: email
@@ -129,6 +135,7 @@ components:
         id:
           type: string
           format: objectid
+          pattern: "^[a-fA-F0-9]{24}$"
         content:
           type: string
           minLength: 5
@@ -348,6 +355,7 @@ paths:
           schema:
             type: string
             format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
       responses:
         "204":
           description: "Предложение успешно удалено"
@@ -368,6 +376,7 @@ paths:
           schema:
             type: string
             format: objectid
+            pattern: "^[a-fA-F0-9]{24}$"
       requestBody:
         description: "Данные для обновления предложения"
         content:

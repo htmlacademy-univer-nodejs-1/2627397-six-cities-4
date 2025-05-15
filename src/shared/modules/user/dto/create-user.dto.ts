@@ -2,21 +2,21 @@ import { IsEmail, IsString, IsOptional, Length, IsIn, Matches } from 'class-vali
 
 export class CreateUserDto {
   @IsEmail()
-  email!: string;
+    email!: string;
 
   @IsString()
   @Length(1, 15)
-  name!: string;
+    name!: string;
 
   @IsOptional()
   @IsString()
   @Matches(/\.(jpg|png)$/i, { message: 'Avatar must be a .jpg or .png image' })
-  avatarUrl?: string;
+    avatarUrl?: string;
 
   @IsString()
   @Length(6, 12)
-  password!: string;
+    password!: string;
 
   @IsIn(['usual', 'pro'])
-  type!: 'usual' | 'pro';
+    type!: 'usual' | 'pro';
 }

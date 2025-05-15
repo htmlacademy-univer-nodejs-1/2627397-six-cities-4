@@ -14,74 +14,74 @@ export class UpdateOfferDto {
   @IsOptional()
   @IsString()
   @Length(10, 100)
-  title?: string;
+    title?: string;
 
   @IsOptional()
   @IsString()
   @Length(20, 1024)
-  description?: string;
+    description?: string;
 
   @IsOptional()
   @IsIn(['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseldorf'])
-  city?: string;
+    city?: string;
 
   @IsOptional()
   @IsString()
-  previewImage?: string;
+    previewImage?: string;
 
   @IsOptional()
   @IsArray()
   @ArrayMinSize(6)
   @ArrayMaxSize(6)
   @IsString({ each: true })
-  images?: string[];
+    images?: string[];
 
   @IsOptional()
   @IsBoolean()
-  isPremium?: boolean;
+    isPremium?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  isFavorite?: boolean;
+    isFavorite?: boolean;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 1 })
   @Min(1)
   @Max(5)
-  rating?: number;
+    rating?: number;
 
   @IsOptional()
   @IsIn(['apartment', 'house', 'room', 'hotel'])
-  type?: string;
+    type?: string;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Max(8)
-  bedrooms?: number;
+    bedrooms?: number;
 
   @IsOptional()
   @IsInt()
   @Min(1)
   @Max(10)
-  maxAdults?: number;
+    maxAdults?: number;
 
   @IsOptional()
   @IsNumber()
   @Min(100)
   @Max(100000)
-  price?: number;
+    price?: number;
 
   @IsOptional()
   @IsArray()
   @IsIn(GOODS_LIST, { each: true })
-  goods?: string[];
+    goods?: string[];
 
   @IsOptional()
   @IsNumber()
-  latitude?: number;
+    latitude?: number;
 
   @IsOptional()
   @IsNumber()
-  longitude?: number;
+    longitude?: number;
 }

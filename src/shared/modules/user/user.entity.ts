@@ -1,18 +1,17 @@
 import { prop, modelOptions, defaultClasses, getModelForClass } from '@typegoose/typegoose';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import * as crypto from 'crypto';
-import { inject } from 'inversify';
-import { Component } from '../../types/component.enum.js';
-import { RestConfig } from '../../libs/config/rest.config.js';
+import * as crypto from 'node:crypto';
 
-@modelOptions({ 
-  schemaOptions: { 
+@modelOptions({
+  schemaOptions: {
     collection: 'users',
-    timestamps: true 
-  } 
+    timestamps: true
+  }
 })
 export class UserEntity extends defaultClasses.TimeStamps {
-  @prop({ 
+  private readonly salt!: string;
+
+  @prop({
     required: true,
     unique: true,
     match: [/^.+@.+$/, 'Email must be valid']
@@ -27,16 +26,17 @@ export class UserEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
-    minlength: [6, 'Min length for password is 6'],
-    maxlength: [12, 'Max length for password is 12']
+    minlength: 64,
+    maxlength: 64
   })
   private password!: string;
 
   @prop({ required: true, enum: ['usual', 'pro'], default: 'usual' })
   public type!: 'usual' | 'pro';
 
-  constructor(dto: CreateUserDto, @inject(Component.Config) private readonly config: RestConfig) {
+  constructor(dto: CreateUserDto, salt: string) {
     super();
+    this.salt = salt;
     this.email = dto.email;
     this.name = dto.name;
     this.type = dto.type;
@@ -44,17 +44,15 @@ export class UserEntity extends defaultClasses.TimeStamps {
   }
 
   public setPassword(password: string) {
-    const salt = this.config.get('SALT');
     this.password = crypto
-      .createHmac('sha256', salt)
+      .createHmac('sha256', this.salt)
       .update(password)
       .digest('hex');
   }
 
   public verifyPassword(password: string) {
-    const salt = this.config.get('SALT');
     const hashPassword = crypto
-      .createHmac('sha256', salt)
+      .createHmac('sha256', this.salt)
       .update(password)
       .digest('hex');
     return hashPassword === this.password;

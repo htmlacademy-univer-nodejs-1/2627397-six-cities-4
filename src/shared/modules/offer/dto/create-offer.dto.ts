@@ -15,71 +15,71 @@ const CITIES = ['Paris', 'Cologne', 'Brussels', 'Amsterdam', 'Hamburg', 'Dusseld
 export class CreateOfferDto {
   @IsString()
   @Length(10, 100)
-  title!: string;
+    title!: string;
 
   @IsString()
   @Length(20, 1024)
-  description!: string;
+    description!: string;
 
   @IsDateString()
-  createdAt!: string;
+    createdAt!: string;
 
   @IsString()
   @IsIn(CITIES)
-  city!: string;
+    city!: string;
 
   @IsString()
-  previewImage!: string;
+    previewImage!: string;
 
   @IsArray()
   @ArrayMinSize(6)
   @ArrayMaxSize(6)
   @IsString({ each: true })
-  images!: string[];
+    images!: string[];
 
   @IsBoolean()
-  isPremium!: boolean;
+    isPremium!: boolean;
 
   @IsBoolean()
-  isFavorite!: boolean;
+    isFavorite!: boolean;
 
   @IsNumber()
   @Min(1)
   @Max(5)
-  rating!: number;
+    rating!: number;
 
   @IsString()
   @IsIn(['apartment', 'house', 'room', 'hotel'])
-  type!: string;
+    type!: string;
 
   @IsInt()
   @Min(1)
   @Max(8)
-  bedrooms!: number;
+    bedrooms!: number;
 
   @IsInt()
   @Min(1)
   @Max(10)
-  maxAdults!: number;
+    maxAdults!: number;
 
   @IsInt()
   @Min(100)
   @Max(100000)
-  price!: number;
+    price!: number;
 
   @IsArray()
   @ArrayMinSize(1)
   @IsIn(GOODS_LIST, { each: true })
-  goods!: string[];
+    goods!: string[];
 
   @IsMongoId()
-  host!: string;
+    host!: string;
 
   @IsNumber()
   @IsLatitude()
-  latitude!: number;
+    latitude!: number;
 
   @IsNumber()
   @IsLongitude()
-  longitude!: number;
+    longitude!: number;
 }

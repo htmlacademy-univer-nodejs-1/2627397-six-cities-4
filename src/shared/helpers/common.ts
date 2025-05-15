@@ -1,8 +1,8 @@
 import { ClassConstructor, plainToInstance, ClassTransformOptions } from 'class-transformer';
 
 export function fillDTO<T, V>(
-  someDto: ClassConstructor<T>, 
-  plainObject: V, 
+  someDto: ClassConstructor<T>,
+  plainObject: V,
   options: ClassTransformOptions = {}
 ): T {
   return plainToInstance(someDto, plainObject, {

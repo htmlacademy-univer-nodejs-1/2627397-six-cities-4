@@ -27,7 +27,7 @@
   "rating": {
     "min": 1,
     "max": 5,
-    "precision": 1
+    "precision": 0.1
   },
   "bedrooms": {
     "min": 1,
