@@ -269,6 +269,37 @@ components:
         - email
         - password
 
+    CreateOfferDto:
+      allOf:
+        - $ref: '#/components/schemas/OfferBase'
+        - type: object
+          properties:
+            host:
+              type: string
+              format: objectid
+              pattern: "^[a-fA-F0-9]{24}$"
+            createdAt:
+              type: string
+              format: date-time
+          required:
+            - host
+            - createdAt
+            - title
+            - description
+            - city
+            - previewImage
+            - images
+            - isPremium
+            - isFavorite
+            - rating
+            - type
+            - bedrooms
+            - maxAdults
+            - price
+            - goods
+            - latitude
+            - longitude
+
 paths:
   /offers:
     get:
@@ -306,7 +337,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Offer"
+              $ref: "#/components/schemas/CreateOfferDto"
       responses:
         "201":
           description: "Предложение успешно создано"
