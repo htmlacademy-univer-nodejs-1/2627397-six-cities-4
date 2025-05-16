@@ -15,7 +15,6 @@
   "types": ["apartment", "house", "room", "hotel"],
   "goods": ["Breakfast", "Air conditioning", "Laptop friendly workspace", "Baby seat", "Washer", "Towels", "Fridge"],
   "emails": ["user1@example.com", "user2@example.com", "user3@example.com"],
-  "avatars": ["avatar1.png", "avatar2.png", "avatar3.png"],
   "images": {
     "items": ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg", "image6.jpg"],
     "count": 6

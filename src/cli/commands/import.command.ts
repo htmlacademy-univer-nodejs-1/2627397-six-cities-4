@@ -43,7 +43,6 @@ export class ImportCommand implements Command {
       priceStr,
       goodsStr,
       userEmail,
-      /* avatarUrl */,
       latitudeStr,
       longitudeStr
     ] = columns;
@@ -103,7 +102,7 @@ export class ImportCommand implements Command {
     const linePromises: Promise<void>[] = [];
 
     reader.on('line', (line: string) => {
-      const p = this.saveOffer(line)
+      const promise = this.saveOffer(line)
         .then((imported) => {
           if (imported) {
             importedCount++;
@@ -113,7 +112,7 @@ export class ImportCommand implements Command {
           console.error(chalk.red(`Error processing line: ${line}`));
           console.error(chalk.red(error));
         });
-      linePromises.push(p);
+      linePromises.push(promise);
     });
 
     reader.on('end', async () => {

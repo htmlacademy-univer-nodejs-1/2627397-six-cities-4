@@ -6,7 +6,6 @@ export interface OffersData {
   types: string[];
   goods: string[];
   emails: string[];
-  avatars: string[];
   images: {
     items: string[];
     count: number;
