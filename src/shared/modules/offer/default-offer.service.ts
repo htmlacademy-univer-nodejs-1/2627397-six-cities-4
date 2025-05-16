@@ -29,16 +29,6 @@ export class DefaultOfferService implements OfferService {
     return deletedOffer;
   }
 
-  public async getDetailsInfo(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    const offer = await this.offerModel.findById(offerId).exec();
-    if (!offer) {
-      this.logger.warn(`Offer with id ${offerId} not found.`);
-      return null;
-    }
-    this.logger.info(`Retrieved details for offer with id ${offerId}.`);
-    return offer;
-  }
-
   public async getFavorite(): Promise<DocumentType<OfferEntity>[]> {
     const favoriteOffers = await this.offerModel.find({ isFavorite: true }).exec();
     this.logger.info(`Retrieved ${favoriteOffers.length} favorite offers.`);

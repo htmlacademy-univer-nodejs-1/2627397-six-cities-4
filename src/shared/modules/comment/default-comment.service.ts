@@ -4,9 +4,10 @@ import { OfferService } from '../offer/offer-service.interface.js';
 import { Logger } from '../../libs/logger/logger.interface.js';
 import { Component } from '../../types/component.enum.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
+import { CommentService } from './comment-service.interface.js';
 
 @injectable()
-export class DefaultCommentService {
+export class DefaultCommentService implements CommentService {
   constructor(
     @inject(Component.Logger) private logger: Logger,
     @inject(Component.CommentModel) private model: typeof CommentModel,

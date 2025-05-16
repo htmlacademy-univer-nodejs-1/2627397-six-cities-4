@@ -7,6 +7,5 @@ export interface UserService extends DocumentExists {
   findByEmail(email: string): Promise<DocumentType<UserEntity> | null>;
   findById(id: string): Promise<DocumentType<UserEntity> | null>;
   create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
-  findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
   updateAvatar(userId: string, avatarUrl: string): Promise<UserEntity | null>;
 }
