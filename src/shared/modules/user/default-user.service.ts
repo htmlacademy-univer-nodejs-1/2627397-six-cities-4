@@ -30,11 +30,6 @@ export class DefaultUserService implements UserService {
     return result;
   }
 
-  public async findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const existing = await this.findByEmail(dto.email);
-    return existing ?? this.create(dto, salt);
-  }
-
   public async updateAvatar(userId: string, avatarUrl: string): Promise<DocumentType<UserEntity> | null> {
     const user = await this.userModel.findById(userId).exec();
 
