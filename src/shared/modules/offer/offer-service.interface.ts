@@ -16,5 +16,4 @@ export interface OfferService extends DocumentExists {
   getFavorite(): Promise<DocumentType<OfferEntity>[]>;
   calculateRating(rating: number, newRating: number, countRating: number, offerId: string): Promise<void>;
   exists(documentId: string): Promise<boolean>;
-  incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
 }
