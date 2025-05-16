@@ -34,7 +34,6 @@ export class OfferGenerator {
       generateRandomValue(this.data.price.min, this.data.price.max),
       [...this.data.goods].sort(() => 0.5 - Math.random()).slice(0, generateRandomValue(1, this.data.goods.length)).join(';'),
       getRandomItem(this.data.emails),
-      getRandomItem(this.data.avatars),
       latitude,
       longitude
     ].join('\t');
