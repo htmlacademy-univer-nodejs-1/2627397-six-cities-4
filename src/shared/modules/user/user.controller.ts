@@ -27,7 +27,7 @@ export class UserController extends BaseController {
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
   ) {
     super(logger);
-    this.logger.info('Register routes for UserController…');
+    this.logger.info('Register routes for UserController...');
     this.addRoute({
       path: '/register',
       method: HttpMethod.Post,

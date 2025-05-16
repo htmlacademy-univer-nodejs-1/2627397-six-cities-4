@@ -63,10 +63,10 @@ export class RestApplication {
   }
 
   public async init() {
-    this.logger.info('Application initialization…');
+    this.logger.info('Application initialization...');
     this.logger.info(`PORT: ${this.config.get('PORT')}`);
 
-    this.logger.info('Connecting to database…');
+    this.logger.info('Connecting to database...');
     await this._initDb();
     this.logger.info('Database connected');
 

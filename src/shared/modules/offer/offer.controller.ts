@@ -22,7 +22,7 @@ export default class OfferController extends BaseController {
   ) {
     super(logger);
 
-    this.logger.info('Register routes for OfferController');
+    this.logger.info('Register routes for OfferController...');
     this.addRoute({
       path: '/',
       method: HttpMethod.Get,
